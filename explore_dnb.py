@@ -2,6 +2,7 @@
 # listes de fonctions à implémenter
 # -----------------------------------------------------------------------------------------------------
 
+# Type custom pour les tuple de resultat
 Resultat = tuple[int, str, int, int, int]
 
 

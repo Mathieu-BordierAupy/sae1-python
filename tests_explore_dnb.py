@@ -70,7 +70,7 @@ def test_filtre_college():
 
 
 def test_taux_reussite_global():
-    assert dnb.taux_reussite_global(liste1, 2018) == None
+    assert dnb.taux_reussite_global(liste1, 2018) is None
     assert dnb.taux_reussite_global(liste1, 2020) == 476 / 576 * 100
 
 
@@ -86,7 +86,7 @@ def test_moyenne_taux_reussite_college():
 
 
 def test_meilleur_college():
-    assert dnb.meilleur_college(liste1, 2018) == None
+    assert dnb.meilleur_college(liste1, 2018) is None
     assert dnb.meilleur_college(liste2, 2021) == ("JEAN MONNET", 28)
 
 
@@ -101,8 +101,8 @@ def test_plus_longue_periode_amelioration():
 
 
 def test_est_bien_triee():
-    assert dnb.est_bien_triee(liste1) == True
-    assert dnb.est_bien_triee([]) == True
+    assert dnb.est_bien_triee(liste1) is True
+    assert dnb.est_bien_triee([]) is True
 
 
 def test_fusionner_resultats():
@@ -132,12 +132,12 @@ def test_fusionner_resultats():
 # ---------------------------------------------------------------------------------------------
 
 # exemples de résultats
-resultat1 = (2008, "JEANNE D'ARC", 45, 71, 67)
-resultat2 = (2012, "ALBERT SIDOISNE", 28, 98, 78)
-resultat3 = (2016, "JEAN MONNET", 37, 115, 109)
+resultat1: dnb.Resultat = (2008, "JEANNE D'ARC", 45, 71, 67)
+resultat2: dnb.Resultat = (2012, "ALBERT SIDOISNE", 28, 98, 78)
+resultat3: dnb.Resultat = (2016, "JEAN MONNET", 37, 115, 109)
 
 # exemples de listes de résultats
-liste1 = [
+liste1: list[dnb.Resultat] = [
     (2020, "ALBERT SIDOISNE", 28, 134, 118),
     (2020, "ANATOLE FRANCE", 28, 63, 47),
     (2020, "DE NERMONT - CHATEAUDUN", 28, 74, 60),
@@ -166,7 +166,7 @@ liste2 = [
     (2021, "SULLY", 28, 14, 10),
 ]
 
-liste3 = [
+liste3: list[dnb.Resultat] = [
     (2021, "HENRI POURRAT", 45, 17, 16),
     (2021, "DU HAUT ALLIER", 45, 54, 49),
     (2021, "LA PRESENTATION", 45, 26, 24),
@@ -222,7 +222,7 @@ liste3 = [
     (2021, "SAINT-LOUIS", 45, 69, 69),
 ]
 
-liste4 = [
+liste4: list[dnb.Resultat] = [
     (2008, "JEANNE D'ARC", 45, 71, 67),
     (2012, "ALBERT SIDOISNE", 28, 98, 78),
     (2016, "JEAN MONNET", 37, 115, 109),
@@ -230,7 +230,7 @@ liste4 = [
     (2020, "MATHURIN REGNIER", 28, 152, 118),
 ]
 
-liste5 = [
+liste5: list[dnb.Resultat] = [
     (2006, "AUGUSTE AYMARD", 45, 24, 12),
     (2006, "BONNEFONT", 45, 22, 22),
     (2006, "CEVENOL", 45, 46, 33),
