@@ -6,14 +6,27 @@ import explore_dnb as dnb
 
 
 def test_taux_reussite():
+    # Utilisation des variable resulta{1..3} pour tester la fonction
     assert dnb.taux_reussite(resultat1) == 67 / 71 * 100
     assert dnb.taux_reussite(resultat2) == 78 / 98 * 100
     assert dnb.taux_reussite(resultat3) == 109 / 115 * 100
+    # Verification du comportement de la fonction pour des résultats incohérent
+    assert dnb.taux_reussite((2022, "MONTAIGNE", 37, 0, 0)) == 0
+    # Aucun élève n'a réussi le dnb, la fonction doit renvoyer 0
+    assert dnb.taux_reussite((2021, "CHRIST ROI", 37, 153, 0)) == 0
 
 
 def test_meilleur():
-    assert dnb.meilleur(resultat1, resultat2) == True
-    assert dnb.meilleur(resultat1, resultat3) == False
+    # Comparaison resultat1 et resultat2, resultat1 est meilleur que resultat2
+    assert dnb.meilleur(resultat1, resultat2) is True
+    assert dnb.meilleur(resultat2, resultat1) is False
+
+    # Comparaison resultat1 et resultat3, resultat3 est meilleur que resultat1
+    assert dnb.meilleur(resultat1, resultat3) is False
+    assert dnb.meilleur(resultat3, resultat1) is True
+
+    # Comparaison entre deux resultat identique, la fonction doit retourner False
+    assert dnb.meilleur(resultat1, resultat1) is False
 
 
 def test_meilleur_taux_reussite():

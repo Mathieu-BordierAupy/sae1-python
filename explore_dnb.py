@@ -1,21 +1,23 @@
-
 # -----------------------------------------------------------------------------------------------------
 # listes de fonctions à implémenter
 # -----------------------------------------------------------------------------------------------------
 
-def taux_reussite(resultat):
+Resultat = tuple[int, str, int, int, int]
+
+
+def taux_reussite(resultat: Resultat) -> float:
     """calcule le pourcentage de réussite correspondant au résultat
 
     Args:
         resultat (tuple): le résultat d'un collège pour une session (année)
-        
+
     Returns:
         float:  le pourcentage de réussite (nb. admis / nb. présents ā la session)
     """
     pass
 
 
-def meilleur(resultat1, resultat2):
+def meilleur(resultat1: Resultat, resultat2: Resultat) -> bool:
     """vérifie si resultat1 est meilleur que resultat2 au sens des taux de réussites
 
     Args:
@@ -24,11 +26,11 @@ def meilleur(resultat1, resultat2):
 
     Returns:
         bool:   True si le taux de réussite de resultat1 est supérieur ā celui de resultat2
-    """    
+    """
     pass
 
 
-def meilleur_taux_reussite(liste_resultats):
+def meilleur_taux_reussite(liste_resultats: list[Resultat]) -> float:
     """recherche le meilleur taux de réussite dans une liste de résultats
 
     Args:
@@ -40,7 +42,7 @@ def meilleur_taux_reussite(liste_resultats):
     pass
 
 
-def pire_taux_reussite(liste_resultats):
+def pire_taux_reussite(liste_resultats: list[Resultat]) -> float:
     """recherche le pire taux de réussite parmi une liste de résultats
 
     Args:
@@ -52,7 +54,7 @@ def pire_taux_reussite(liste_resultats):
     pass
 
 
-def total_admis_presents(liste_resultats):
+def total_admis_presents(liste_resultats: list[Resultat]) -> tuple[int, int]:
     """calcule le nombre total de candidats admis et de candidats présents aux épreuves du DNB parmi les résultats de la liste passée en paramètre
 
     Args:
@@ -64,7 +66,7 @@ def total_admis_presents(liste_resultats):
     pass
 
 
-def filtre_session(liste_resultats, session):
+def filtre_session(liste_resultats: list[Resultat], session: int) -> list[Resultat]:
     """génère la sous-liste de liste_resultats, restreinte aux résultats de la session demandée
 
     Args:
@@ -77,7 +79,9 @@ def filtre_session(liste_resultats, session):
     pass
 
 
-def filtre_departement(liste_resultats, departement):
+def filtre_departement(
+    liste_resultats: list[Resultat], departement: int
+) -> list[Resultat]:
     """génère la sous-liste de liste_resultats, restreinte aux résultats du département demandé
 
     Args:
@@ -90,7 +94,9 @@ def filtre_departement(liste_resultats, departement):
     pass
 
 
-def filtre_college(liste_resultats, nom, departement):
+def filtre_college(
+    liste_resultats: list[Resultat], nom: str, departement: int
+) -> list[Resultat]:
     """génère la sous-liste de liste_resultats, restreinte aux résultats du département donné et dont le nom du collège contient le nom passé en paramètre (en minuscule ou majuscule)
 
     Args:
@@ -104,60 +110,62 @@ def filtre_college(liste_resultats, nom, departement):
     pass
 
 
-def taux_reussite_global(liste_resultats, session):
+def taux_reussite_global(liste_resultats: list[Resultat], session: int) -> float:
     """calcule le taux (pourcentage) de réussite au DNB sur l'ensemble des collèges pour une session donnée
 
     Args:
         liste_resultats (list): une liste de résultats
         session (int) : une session (année)
-        
+
     Returns:
         float: taux (pourcentage) de réussite au DNB sur l'ensemble des collèges pour une session donnēes
     """
     pass
 
 
-def moyenne_taux_reussite_college(liste_resultats, nom, departement):
+def moyenne_taux_reussite_college(
+    liste_resultats: list[Resultat], nom: str, departement: int
+) -> float:
     """calcule la moyenne des taux de réussite d'un collège sur l'ensemble des sessions
 
     Args:
         liste_resultats (list): une liste de résultats
         nom (str): un nom de collège (exact)
         departement (int) : un numéro de département
-        
+
     Returns:
         float: moyenne des taux de rēussite d'un collège sur l'ensemble des sessions
     """
     pass
 
 
-def meilleur_college(liste_resultats, session):
+def meilleur_college(liste_resultats: list[Resultat], session: int) -> tuple[str, int]:
     """recherche le collège ayant obtenu le meilleur taux de réussite pour une session donnée
 
     Args:
         liste_resultats (list): une liste de résultats
         session (int) : une session (année)
-        
+
     Returns:
         tuple: couple contenant le nom du collège et le dēpartement
     """
     pass
 
 
-def liste_sessions(liste_resultats):
+def liste_sessions(liste_resultats: list[Resultat]) -> list[Resultat]:
     """retourne la liste des sessions (années) dont au moins un résultat est reporté dans la liste de résultats.
-    ATTENTION : la liste renvoyée doit être sans doublons et triée par ordre chronologique des sessions 
+    ATTENTION : la liste renvoyée doit être sans doublons et triée par ordre chronologique des sessions
 
     Args:
         liste_resultats (list): une liste de résultats
 
     Returns:
         list: une liste de session (int) triēe et sans doublons
-    """    
+    """
     pass
 
 
-def plus_longe_periode_amelioration(liste_resultats):
+def plus_longe_periode_amelioration(liste_resultats: list[Resultat]) -> tuple[int, int]:
     """recherche la plus longue periode d'amélioration du taux de réussite global au DNB
 
     Args:
@@ -165,12 +173,13 @@ def plus_longe_periode_amelioration(liste_resultats):
 
     Returns:
         tuple: un couple contenant la session (année) de début de la période et la session de fin de la pēriode
-    """    
+    """
     pass
 
-def est_bien_triee(liste_resultats):
+
+def est_bien_triee(liste_resultats: list[Resultat]) -> bool:
     """vérifie qu'une liste de résultats est bien triée dans l'ordre chronologique des sessions puis dans l'ordre croissant des départements puis dans l'ordre alphabétique des noms de collèges
-    
+
     Args:
         liste_resultats (list): une liste de résultats
 
@@ -180,7 +189,9 @@ def est_bien_triee(liste_resultats):
     pass
 
 
-def fusionner_resultats(liste_resultats1, liste_resultats2):
+def fusionner_resultats(
+    liste_resultats1: list[Resultat], liste_resultats2: list[Resultat]
+) -> list[Resultat]:
     """Fusionne deux listes de résultats triées sans doublons en une liste triée sans doublon
     sachant qu'un même résultat peut être présent dans les deux listes
 
@@ -194,7 +205,7 @@ def fusionner_resultats(liste_resultats1, liste_resultats2):
     pass
 
 
-def charger_resultats(nom_fichier):
+def charger_resultats(nom_fichier: str) -> list[Resultat]:
     """charge un fichier de résultats au DNB donné au format CSV en une liste de résultats
 
     Args:
