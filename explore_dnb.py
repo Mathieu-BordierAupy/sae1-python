@@ -219,15 +219,15 @@ def filtre_college(
     #   resultats[1] est le nom du college du resulat actuel
     #   resultats[2] est le numéro de departement du resulat actuel
     #   liste_resultats_triee contient tout les resultats qui sont du bon departement et commencant par le nom déjà trouvé
-    for resultats in liste_resultats:
+    for resultat in liste_resultats:
         # TODO: Maybe I can't use __contains__
-        if resultats[2] == departement and string_contient(resultats[1], nom):
-            liste_resultats_triee.append(resultats)
+        if resultat[2] == departement and string_contient(resultat[1], nom):
+            liste_resultats_triee.append(resultat)
 
     return liste_resultats_triee
 
 
-def taux_reussite_global(liste_resultats: list[Resultat], session: int) -> float:
+def taux_reussite_global(liste_resultats: list[Resultat], session: int) -> float | None:
     """calcule le taux (pourcentage) de réussite au DNB sur l'ensemble des collèges pour une session donnée
 
     Args:
@@ -237,12 +237,19 @@ def taux_reussite_global(liste_resultats: list[Resultat], session: int) -> float
     Returns:
         float: taux (pourcentage) de réussite au DNB sur l'ensemble des collèges pour une session donnēes
     """
-    pass
+    liste_resultats_session: list[Resultat] = filtre_session(liste_resultats, session)
+
+    nb_admis, nb_present = total_admis_presents(liste_resultats_session)
+
+    if nb_admis <= 0:
+        return None
+
+    return nb_admis / nb_present * 100
 
 
 def moyenne_taux_reussite_college(
     liste_resultats: list[Resultat], nom: str, departement: int
-) -> float:
+) -> float | None:
     """calcule la moyenne des taux de réussite d'un collège sur l'ensemble des sessions
 
     Args:
@@ -253,7 +260,20 @@ def moyenne_taux_reussite_college(
     Returns:
         float: moyenne des taux de rēussite d'un collège sur l'ensemble des sessions
     """
-    pass
+    liste_resultats_college: float = 0
+
+    # Pour chaque tour de boucle
+    #   resultats est le tuple resultat suivant de liste_resultats
+    #   resultats[1] est le nom du college du resulat actuel
+    #   resultats[2] est le numéro de departement du resulat actuel
+    #   liste_resultats_triee contient tout les resultats qui sont du bon departement et avec le bon nom déjà trouvé
+    for resultat in liste_resultats:
+        if resultat[2] == departement and resultat[1] == nom:
+            taux: float | None = taux_reussite(resultat)
+            if taux is not None:
+                liste_resultats_college += taux
+
+    
 
 
 def meilleur_college(liste_resultats: list[Resultat], session: int) -> tuple[str, int]:

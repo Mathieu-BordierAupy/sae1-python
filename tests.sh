@@ -8,4 +8,6 @@ exec pytest -v tests_explore_dnb.py::test_taux_reussite \
 	tests_explore_dnb.py::test_filtre_session \
 	tests_explore_dnb.py::test_filtre_departement \
 	tests_explore_dnb.py::test_filtre_college \
-	tests_explore_dnb.py::test_string_contient
+	tests_explore_dnb.py::test_string_contient \
+	tests_explore_dnb.py::test_taux_reussite_global \
+	tests_explore_dnb.py::test_moyenne_taux_reussite_college 
