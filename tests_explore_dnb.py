@@ -11,7 +11,7 @@ def test_taux_reussite():
     assert dnb.taux_reussite(resultat2) == 78 / 98 * 100
     assert dnb.taux_reussite(resultat3) == 109 / 115 * 100
     # Verification du comportement de la fonction pour des résultats incohérent
-    assert dnb.taux_reussite((2022, "MONTAIGNE", 37, 0, 0)) == 0
+    assert dnb.taux_reussite((2022, "MONTAIGNE", 37, 0, 0)) is None
     # Aucun élève n'a réussi le dnb, la fonction doit renvoyer 0
     assert dnb.taux_reussite((2021, "CHRIST ROI", 37, 153, 0)) == 0
 
@@ -27,6 +27,9 @@ def test_meilleur():
 
     # Comparaison entre deux resultat identique, la fonction doit retourner False
     assert dnb.meilleur(resultat1, resultat1) is False
+
+    # Comparaison avec un resultat impossible
+    assert dnb.meilleur(resultat1, (2022, "MONTAIGNE", 37, 0, 0)) is None
 
 
 def test_meilleur_taux_reussite():

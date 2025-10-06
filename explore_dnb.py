@@ -6,7 +6,7 @@
 Resultat = tuple[int, str, int, int, int]
 
 
-def taux_reussite(resultat: Resultat) -> float:
+def taux_reussite(resultat: Resultat) -> float | None:
     """calcule le pourcentage de réussite correspondant au résultat
 
     Args:
@@ -15,10 +15,17 @@ def taux_reussite(resultat: Resultat) -> float:
     Returns:
         float:  le pourcentage de réussite (nb. admis / nb. présents ā la session)
     """
-    pass
+    nb_presents: int = resultat[3]
+
+    if nb_presents <= 0:
+        return None
+
+    nb_admis: int = resultat[4]
+
+    return (nb_admis / nb_presents) * 100
 
 
-def meilleur(resultat1: Resultat, resultat2: Resultat) -> bool:
+def meilleur(resultat1: Resultat, resultat2: Resultat) -> bool | None:
     """vérifie si resultat1 est meilleur que resultat2 au sens des taux de réussites
 
     Args:
@@ -28,10 +35,17 @@ def meilleur(resultat1: Resultat, resultat2: Resultat) -> bool:
     Returns:
         bool:   True si le taux de réussite de resultat1 est supérieur ā celui de resultat2
     """
-    pass
+
+    res1: float | None = taux_reussite(resultat1)
+    res2: float | None = taux_reussite(resultat2)
+
+    if res1 is None or res2 is None:
+        return None
+
+    return res1 > res2
 
 
-def meilleur_taux_reussite(liste_resultats: list[Resultat]) -> float:
+def meilleur_taux_reussite(liste_resultats: list[Resultat]) -> float | None:
     """recherche le meilleur taux de réussite dans une liste de résultats
 
     Args:
@@ -40,10 +54,22 @@ def meilleur_taux_reussite(liste_resultats: list[Resultat]) -> float:
     Returns:
         float: le meilleur taux de rēussite
     """
-    pass
+    meilleur_res: float | None = taux_reussite(liste_resultats[0])
+
+    # Pour chaque tour de boucle
+    #   i prend l'entier suivant du range à partir de 1
+    #   liste_resultats[i] est le i-ème résultat de la liste
+    #   taux est le taux de réussite du i-ème resultat
+    #   meilleur_res est le meilleur taux de réussite trouvé ou None si les taux ne sont pas calculable
+    for i in range(1, len(liste_resultats)):
+        taux = taux_reussite(liste_resultats[i])
+        if meilleur_res is None or (taux is not None and meilleur_res < taux):
+            meilleur_res = taux
+
+    return meilleur_res
 
 
-def pire_taux_reussite(liste_resultats: list[Resultat]) -> float:
+def pire_taux_reussite(liste_resultats: list[Resultat]) -> float | None:
     """recherche le pire taux de réussite parmi une liste de résultats
 
     Args:
@@ -52,7 +78,19 @@ def pire_taux_reussite(liste_resultats: list[Resultat]) -> float:
     Returns:
         float: le pire taux de rēussite
     """
-    pass
+    pire_res: float | None = taux_reussite(liste_resultats[0])
+
+    # Pour chaque tour de boucle
+    #   i prend l'entier suivant du range à partir de 1
+    #   liste_resultats[i] est le i-ème résultat de la liste
+    #   taux est le taux de réussite du i-ème resultat
+    #   pire_res est le pire taux de réussite trouvé ou None si les taux ne sont pas calculable
+    for i in range(1, len(liste_resultats)):
+        taux = taux_reussite(liste_resultats[i])
+        if pire_res is None or (taux is not None and pire_res > taux):
+            pire_res = taux
+
+    return pire_res
 
 
 def total_admis_presents(liste_resultats: list[Resultat]) -> tuple[int, int]:
@@ -64,7 +102,18 @@ def total_admis_presents(liste_resultats: list[Resultat]) -> tuple[int, int]:
     Returns:
         tuple : un couple d'entiers contenant le nombre total de candidats admis et prēsents
     """
-    pass
+    total_admis: int = 0
+    total_present: int = 0
+
+    # Pour chaque tour de boucle
+    #   resultat est l'élément suivant de liste_resultats
+    #   total_admis est le total du nombre d'admis trouvé jusqu'à maintenant
+    #   total_present est le total du nombre de present trouvé jusqu'à maintenant
+    for resultat in liste_resultats:
+        total_admis += resultat[4]
+        total_present += resultat[3]
+
+    return (total_admis, total_present)
 
 
 def filtre_session(liste_resultats: list[Resultat], session: int) -> list[Resultat]:
@@ -77,7 +126,17 @@ def filtre_session(liste_resultats: list[Resultat], session: int) -> list[Result
     Returns:
         list: la sous-liste de liste_resultats, restreinte aux résultats de la session demandēe
     """
-    pass
+    liste_resultats_triee: list[Resultat] = []
+
+    # Pour chaque tour de boucle
+    #   resultats est le tuple resultat suivant de liste_resultats
+    #   resultats[0] est le numéro de session (année) du resulat actuelle
+    #   liste_resultats_triee contient tout les resultats qui sont de la bonne session déjà trouvé
+    for resultats in liste_resultats:
+        if resultats[0] == session:
+            liste_resultats_triee.append(resultats)
+
+    return liste_resultats_triee
 
 
 def filtre_departement(
