@@ -130,7 +130,7 @@ def filtre_session(liste_resultats: list[Resultat], session: int) -> list[Result
 
     # Pour chaque tour de boucle
     #   resultats est le tuple resultat suivant de liste_resultats
-    #   resultats[0] est le numéro de session (année) du resulat actuelle
+    #   resultats[0] est le numéro de session (année) du resulat actuel
     #   liste_resultats_triee contient tout les resultats qui sont de la bonne session déjà trouvé
     for resultats in liste_resultats:
         if resultats[0] == session:
@@ -151,7 +151,52 @@ def filtre_departement(
     Returns:
         list: la sous-liste de liste_resultats, restreinte aux résultats du dēpartement demandé
     """
-    pass
+    liste_resultats_triee: list[Resultat] = []
+
+    # Pour chaque tour de boucle
+    #   resultats est le tuple resultat suivant de liste_resultats
+    #   resultats[2] est le numéro de departement du resulat actuel
+    #   liste_resultats_triee contient tout les resultats qui sont du bon departement déjà trouvé
+    for resultats in liste_resultats:
+        if resultats[2] == departement:
+            liste_resultats_triee.append(resultats)
+
+    return liste_resultats_triee
+
+
+def string_contient(source: str, contient: str) -> bool:
+    """Cherche une chaine de caractère dans une autre, ne respecte pas la case
+
+    Args:
+        source (str): La chaine de caractère où chercher
+        contient (str): La chaine à retrouver dans la source
+
+    Returns:
+        bool: True si la chaine à été correctement trouvé, sinon False
+    """
+    if len(contient) == 0:
+        return False
+
+    # Pour chaque tour de boucle
+    #   i est l'indice actuelle du parcours de la chaine de comparaison (contient)
+    #   j est l'indice actuelle du parcours de la chaine source (range)
+    #   lettre est le j-ème caractère de la chaine source, en lower
+    i: int = 0
+    for j in range(len(source)):
+        lettre = source[j].lower()
+
+        # Compare si la lettre actuelle est la lettre dans contient à l'indice j
+        if lettre == contient[i].lower():
+            # Si la lettre est la bonne, on avance le curseur i de 1
+            i += 1
+        else:
+            # On remet i à 0 pour reprendre la comparaison à 0
+            i = 0
+        # Si i est la taille de contient, c'est qu'il à été parcouru en entier et donc que le mot à été trouvé
+        if i == len(contient):
+            return True
+
+    return False
 
 
 def filtre_college(
@@ -167,7 +212,19 @@ def filtre_college(
     Returns:
         list: la sous-liste de liste_resultats, restreinte aux résultats du collège et du département recherchēs
     """
-    pass
+    liste_resultats_triee: list[Resultat] = []
+
+    # Pour chaque tour de boucle
+    #   resultats est le tuple resultat suivant de liste_resultats
+    #   resultats[1] est le nom du college du resulat actuel
+    #   resultats[2] est le numéro de departement du resulat actuel
+    #   liste_resultats_triee contient tout les resultats qui sont du bon departement et commencant par le nom déjà trouvé
+    for resultats in liste_resultats:
+        # TODO: Maybe I can't use __contains__
+        if resultats[2] == departement and string_contient(resultats[1], nom):
+            liste_resultats_triee.append(resultats)
+
+    return liste_resultats_triee
 
 
 def taux_reussite_global(liste_resultats: list[Resultat], session: int) -> float:

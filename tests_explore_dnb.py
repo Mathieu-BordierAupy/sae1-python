@@ -64,6 +64,27 @@ def test_filtre_departement():
     ]
 
 
+def test_string_contient():
+    # Verification avec un seul mot, sans respect de la case
+    assert dnb.string_contient("test", "test") is True
+    assert dnb.string_contient("teST", "test") is True
+    # Verifiation avec un mot non-valide avant
+    assert dnb.string_contient("bonjour test", "test") is True
+    assert dnb.string_contient("bonjOUR tESt", "test") is True
+    # Verification avec un mot non-valide avant et après
+    assert dnb.string_contient("bonjour test abc", "test") is True
+    assert dnb.string_contient("bonjour TEst abc", "test") is True
+    # Verification avec le mot cible collé à un autre mot
+    assert dnb.string_contient("bonjour testabc", "test") is True
+    assert dnb.string_contient("bonjour tESTabc", "test") is True
+    # Verification avec le mot coupé par autre chose
+    assert dnb.string_contient("bonjour teabcst", "test") is False
+    # Le mot à cherché est vide
+    assert dnb.string_contient("bonjour test abc", "") is False
+    # Le mot cible n'existe pas
+    assert dnb.string_contient("bonjour abc", "test") is False
+
+
 def test_filtre_college():
     assert dnb.filtre_college(liste1, "EMILE", 45) == []
     assert dnb.filtre_college(liste1, "NERMONT", 28) == [
