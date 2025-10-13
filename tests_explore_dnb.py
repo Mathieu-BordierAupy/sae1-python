@@ -35,16 +35,28 @@ def test_meilleur():
 def test_meilleur_taux_reussite():
     assert dnb.meilleur_taux_reussite(liste2) == 27 / 28 * 100
     assert dnb.meilleur_taux_reussite(liste3) == 1.0 * 100
+    # La liste est vide
+    assert dnb.meilleur_taux_reussite([]) is None, "La fonction ne renvoie pas None"
+    # Liste avec un seul élément anormal
+    assert dnb.meilleur_taux_reussite([(2022, "MONTAIGNE", 37, 0, 0)]) is None
 
 
 def test_pire_taux_reussite():
     assert dnb.pire_taux_reussite(liste1) == 47 / 63 * 100
     assert dnb.pire_taux_reussite(liste2) == 15 / 24 * 100
+    # La liste est vide
+    assert dnb.pire_taux_reussite([]) is None, "La fonction ne renvoie pas None"
+    # Liste avec un seul élément anormal
+    assert dnb.pire_taux_reussite([(2022, "MONTAIGNE", 37, 0, 0)]) is None
 
 
 def test_total_admis_presents():
     assert dnb.total_admis_presents(liste1) == (476, 576)
     assert dnb.total_admis_presents(liste2) == (922, 1111)
+    # La liste est vide
+    assert dnb.total_admis_presents([]) is None
+    # Liste avec un seul élément anormal
+    assert dnb.pire_taux_reussite([(2022, "MONTAIGNE", 37, 0, 0)]) is None
 
 
 def test_filtre_session():
@@ -53,6 +65,13 @@ def test_filtre_session():
         (2020, "MATHURIN REGNIER", 28, 152, 118),
     ]
     assert dnb.filtre_session(liste4, 2018) == []
+    # La liste est vide
+    assert dnb.filtre_session([], 2014) == []
+    # Liste avec un seul élément
+    assert dnb.filtre_session([(2022, "MONTAIGNE", 37, 0, 0)], 2022) == [
+        (2022, "MONTAIGNE", 37, 0, 0)
+    ]
+    assert dnb.filtre_session([(2022, "MONTAIGNE", 37, 0, 0)], 1985) == []
 
 
 def test_filtre_departement():
@@ -62,6 +81,13 @@ def test_filtre_departement():
         (2020, "ALBERT SIDOISNE", 28, 134, 118),
         (2020, "MATHURIN REGNIER", 28, 152, 118),
     ]
+    # La liste est vide
+    assert dnb.filtre_departement([], 2) == []
+    # Liste avec un seul élément
+    assert dnb.filtre_departement([(2022, "MONTAIGNE", 37, 0, 0)], 37) == [
+        (2022, "MONTAIGNE", 37, 0, 0)
+    ]
+    assert dnb.filtre_departement([(2022, "MONTAIGNE", 37, 0, 0)], 45) == []
 
 
 def test_string_contient():
@@ -91,11 +117,23 @@ def test_filtre_college():
         (2020, "DE NERMONT - CHATEAUDUN", 28, 74, 60),
         (2020, "DE NERMONT - NOGENT", 28, 28, 27),
     ]
+    # La liste est vide
+    assert dnb.filtre_college([], "Abc", 1) == []
+    # Liste avec un seul élément
+    assert dnb.filtre_college([(2022, "MONTAIGNE", 37, 0, 0)], "MON", 37) == [
+        (2022, "MONTAIGNE", 37, 0, 0)
+    ]
+    assert dnb.filtre_college([(2022, "MONTAIGNE", 37, 0, 0)], "MON", 45) == []
 
 
 def test_taux_reussite_global():
     assert dnb.taux_reussite_global(liste1, 2018) is None
     assert dnb.taux_reussite_global(liste1, 2020) == 476 / 576 * 100
+    # La liste est vide
+    assert dnb.taux_reussite_global([], 2) is None
+    # Liste avec un seul élément
+    assert dnb.taux_reussite_global([(2022, "MONTAIGNE", 37, 0, 0)], 37) is None
+    assert dnb.taux_reussite_global([(2022, "MONTAIGNE", 37, 0, 0)], 45) is None
 
 
 def test_moyenne_taux_reussite_college():
@@ -107,11 +145,15 @@ def test_moyenne_taux_reussite_college():
         dnb.moyenne_taux_reussite_college(liste2, "GILBERT COURTOIS", 28)
         == (18 / 22 * 100 + 15 / 24 * 100) / 2
     )
+    # La liste est vide
+    assert dnb.moyenne_taux_reussite_college([], "Abc", 78) is None
 
 
 def test_meilleur_college():
     assert dnb.meilleur_college(liste1, 2018) is None
     assert dnb.meilleur_college(liste2, 2021) == ("JEAN MONNET", 28)
+    # La liste est vide
+    assert dnb.meilleur_college([], 78) is None
 
 
 def test_liste_sessions():

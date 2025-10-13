@@ -3,6 +3,9 @@
 # -----------------------------------------------------------------------------------------------------
 
 # Type custom pour les tuple de resultat
+from typing import Callable
+
+
 Resultat = tuple[int, str, int, int, int]
 
 
@@ -54,6 +57,9 @@ def meilleur_taux_reussite(liste_resultats: list[Resultat]) -> float | None:
     Returns:
         float: le meilleur taux de rēussite
     """
+    if liste_resultats == []:
+        return None
+
     meilleur_res: float | None = taux_reussite(liste_resultats[0])
 
     # Pour chaque tour de boucle
@@ -78,6 +84,9 @@ def pire_taux_reussite(liste_resultats: list[Resultat]) -> float | None:
     Returns:
         float: le pire taux de rēussite
     """
+    if liste_resultats == []:
+        return None
+
     pire_res: float | None = taux_reussite(liste_resultats[0])
 
     # Pour chaque tour de boucle
@@ -93,7 +102,7 @@ def pire_taux_reussite(liste_resultats: list[Resultat]) -> float | None:
     return pire_res
 
 
-def total_admis_presents(liste_resultats: list[Resultat]) -> tuple[int, int]:
+def total_admis_presents(liste_resultats: list[Resultat]) -> tuple[int, int] | None:
     """calcule le nombre total de candidats admis et de candidats présents aux épreuves du DNB parmi les résultats de la liste passée en paramètre
 
     Args:
@@ -102,6 +111,9 @@ def total_admis_presents(liste_resultats: list[Resultat]) -> tuple[int, int]:
     Returns:
         tuple : un couple d'entiers contenant le nombre total de candidats admis et prēsents
     """
+    if liste_resultats == []:
+        return None
+
     total_admis: int = 0
     total_present: int = 0
 
@@ -221,7 +233,9 @@ def filtre_college(
     #   liste_resultats_triee contient tout les resultats qui sont du bon departement et commencant par le nom déjà trouvé
     for resultat in liste_resultats:
         # TODO: Maybe I can't use __contains__
-        if resultat[2] == departement and string_contient(resultat[1], nom):
+        if (
+            resultat[2] == departement and nom.lower() in resultat[1].lower()
+        ):  # string_contient(resultat[1], nom):
             liste_resultats_triee.append(resultat)
 
     return liste_resultats_triee
@@ -239,7 +253,11 @@ def taux_reussite_global(liste_resultats: list[Resultat], session: int) -> float
     """
     liste_resultats_session: list[Resultat] = filtre_session(liste_resultats, session)
 
-    nb_admis, nb_present = total_admis_presents(liste_resultats_session)
+    total_ad_pr = total_admis_presents(liste_resultats_session)
+    # Verify that the function ran correctly
+    if total_ad_pr is None:
+        return None
+    nb_admis, nb_present = total_ad_pr
 
     if nb_admis <= 0:
         return None
@@ -260,7 +278,10 @@ def moyenne_taux_reussite_college(
     Returns:
         float: moyenne des taux de rēussite d'un collège sur l'ensemble des sessions
     """
-    liste_resultats_college: float = 0
+    if liste_resultats == []:
+        return None
+    total_taux: float = 0
+    nb_taux: int = 0
 
     # Pour chaque tour de boucle
     #   resultats est le tuple resultat suivant de liste_resultats
@@ -271,12 +292,14 @@ def moyenne_taux_reussite_college(
         if resultat[2] == departement and resultat[1] == nom:
             taux: float | None = taux_reussite(resultat)
             if taux is not None:
-                liste_resultats_college += taux
+                total_taux += taux
+                nb_taux += 1
+    return total_taux / nb_taux
 
-    
 
-
-def meilleur_college(liste_resultats: list[Resultat], session: int) -> tuple[str, int]:
+def meilleur_college(
+    liste_resultats: list[Resultat], session: int
+) -> tuple[str, int] | None:
     """recherche le collège ayant obtenu le meilleur taux de réussite pour une session donnée
 
     Args:
@@ -286,10 +309,55 @@ def meilleur_college(liste_resultats: list[Resultat], session: int) -> tuple[str
     Returns:
         tuple: couple contenant le nom du collège et le dēpartement
     """
-    pass
+    resultats = filtre_session(liste_resultats, session)
+
+    if resultats == []:
+        return None
+
+    meilleur_trouve: int = 0
+    meilleur_taux = taux_reussite(resultats[0])
+
+    # Pour chaque tour de boucle
+    #   i est l'entier suivant du range à partir de 1
+    #   resultats[i] est le i-ème resultat
+    #   taux est le taux de reussite du i-ème resultat ou None si non calculable
+    #   meilleur_trouve est l'indice du meilleur resultat
+    #   meilleur_taux est le taux du meilleur resultat pour ne pas à avoir à le recalculer
+    for i in range(1, len(resultats)):
+        taux = taux_reussite(resultats[i])
+        if taux is not None and (meilleur_taux is None or taux > meilleur_taux):
+            meilleur_trouve = i
+            meilleur_taux = taux
+    # Aucun taux n'a pu être calculé, on renvoie donc None
+    if meilleur_taux is None:
+        return None
+    return resultats[meilleur_trouve][1], resultats[meilleur_trouve][2]
 
 
-def liste_sessions(liste_resultats: list[Resultat]) -> list[Resultat]:
+# Tri fusion
+def fusion_liste(liste1: list[int | float], liste2: list[int | float]):
+    if liste1 == []:
+        return liste2
+    elif liste2 == []:
+        return liste1
+    else:
+        if liste1[0] <= liste2[0]:
+            return [liste1[0]] + fusion_liste(liste1[1::], liste2)
+        else:
+            return [liste2[0]] + fusion_liste(liste1, liste2[1::])
+
+
+def tri_fusion(liste: list[int | float]):
+    if len(liste) <= 1:
+        return liste
+    else:
+        return fusion_liste(
+            tri_fusion(liste[0 : len(liste) // 2]),
+            tri_fusion(liste[len(liste) // 2 + 1 : len(liste) - 1]),
+        )
+
+
+def liste_sessions(liste_resultats: list[Resultat]) -> list[int]:
     """retourne la liste des sessions (années) dont au moins un résultat est reporté dans la liste de résultats.
     ATTENTION : la liste renvoyée doit être sans doublons et triée par ordre chronologique des sessions
 
@@ -297,9 +365,15 @@ def liste_sessions(liste_resultats: list[Resultat]) -> list[Resultat]:
         liste_resultats (list): une liste de résultats
 
     Returns:
-        list: une liste de session (int) triēe et sans doublons
+        list[int]: une liste de session (int) triēe et sans doublons
     """
-    pass
+    nouvelle_session: list[int] = []
+
+    for resultat in liste_resultats:
+        if resultat[0] not in nouvelle_session:
+            nouvelle_session.append(resultat[0])
+
+    return nouvelle_session
 
 
 def plus_longe_periode_amelioration(liste_resultats: list[Resultat]) -> tuple[int, int]:
