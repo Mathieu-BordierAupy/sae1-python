@@ -391,28 +391,28 @@ def plus_longe_periode_amelioration(
     Returns:
         tuple: un couple contenant la session (année) de début de la période et la session de fin de la pēriode
     """
-    debut: int = 0
-    fin: int = 0
-    len_p: int = 0
+    # Pas de le mood pour cette fonction
+    # debut: int = 0
+    # fin: int = 0
+    # len_p: int = 0
 
-    temp_len: int = 0
-    for i in range(1, len(liste_resultats)):
-        d = taux_reussite(liste_resultats[debut])
-        current = taux_reussite(liste_resultats[i])
-        before = taux_reussite(liste_resultats[i - 1])
-        if d is None or current is None or before is None:
-            continue
-        if d >= current and before < current and temp_len >= len_p:
-            debut = fin
-            fin = i
-            len_p = temp_len
-            temp_len = 0
-        else:
-            debut = i
-            if liste_resultats[i][0] != liste_resultats[i - 1][0]:
-                temp_len += 1
+    # temp_len: int = 0
+    # for i in range(1, len(liste_resultats)):
+    #     d = taux_reussite(liste_resultats[debut])
+    #     current = taux_reussite(liste_resultats[i])
+    #     before = taux_reussite(liste_resultats[i - 1])
+    #     if d is None or current is None or before is None:
+    #         continue
+    #     if (d > current and current > before) and temp_len > len_p:
+    #         debut = fin
+    #         len_p = temp_len
+    #         temp_len = 0
+    #     else:
+    #         fin = i
+    #         if liste_resultats[i][0] != liste_resultats[i - 1][0]:
+    #             temp_len += 1
 
-    return liste_resultats[debut][0], liste_resultats[fin][0]
+    # return liste_resultats[debut][0], liste_resultats[fin][0]
 
 
 def est_bien_triee(liste_resultats: list[Resultat]) -> bool:
