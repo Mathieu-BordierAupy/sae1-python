@@ -2,10 +2,8 @@
 # listes de fonctions à implémenter
 # -----------------------------------------------------------------------------------------------------
 
+
 # Type custom pour les tuple de resultat
-from typing import Callable
-
-
 Resultat = tuple[int, str, int, int, int]
 
 
@@ -16,7 +14,7 @@ def taux_reussite(resultat: Resultat) -> float | None:
         resultat (tuple): le résultat d'un collège pour une session (année)
 
     Returns:
-        float:  le pourcentage de réussite (nb. admis / nb. présents ā la session)
+        float:  le pourcentage de réussite (nb. admis / nb. présents à la session)
     """
     nb_presents: int = resultat[3]
 
@@ -42,10 +40,14 @@ def meilleur(resultat1: Resultat, resultat2: Resultat) -> bool | None:
     res1: float | None = taux_reussite(resultat1)
     res2: float | None = taux_reussite(resultat2)
 
-    if res1 is None or res2 is None:
+    if res1 is None and res2 is not None:
+        return False
+    elif res2 is None and res1 is not None:
+        return True
+    elif res1 is None and res2 is None:
         return None
 
-    return res1 > res2
+    return res1 > res2  # pyright: ignore[reportOperatorIssue]
 
 
 def meilleur_taux_reussite(liste_resultats: list[Resultat]) -> float | None:
@@ -335,7 +337,7 @@ def meilleur_college(
 
 
 # Tri fusion
-def fusion_liste(liste1: list[int | float], liste2: list[int | float]):
+def fusion_liste(liste1: list[int], liste2: list[int]):
     if liste1 == []:
         return liste2
     elif liste2 == []:
@@ -347,7 +349,7 @@ def fusion_liste(liste1: list[int | float], liste2: list[int | float]):
             return [liste2[0]] + fusion_liste(liste1, liste2[1::])
 
 
-def tri_fusion(liste: list[int | float]):
+def tri_fusion(liste: list[int]):
     if len(liste) <= 1:
         return liste
     else:
@@ -373,10 +375,14 @@ def liste_sessions(liste_resultats: list[Resultat]) -> list[int]:
         if resultat[0] not in nouvelle_session:
             nouvelle_session.append(resultat[0])
 
+    tri_fusion(nouvelle_session)
+
     return nouvelle_session
 
 
-def plus_longe_periode_amelioration(liste_resultats: list[Resultat]) -> tuple[int, int]:
+def plus_longe_periode_amelioration(
+    liste_resultats: list[Resultat],
+) -> tuple[int, int] | None:
     """recherche la plus longue periode d'amélioration du taux de réussite global au DNB
 
     Args:
@@ -385,7 +391,28 @@ def plus_longe_periode_amelioration(liste_resultats: list[Resultat]) -> tuple[in
     Returns:
         tuple: un couple contenant la session (année) de début de la période et la session de fin de la pēriode
     """
-    pass
+    debut: int = 0
+    fin: int = 0
+    len_p: int = 0
+
+    temp_len: int = 0
+    for i in range(1, len(liste_resultats)):
+        d = taux_reussite(liste_resultats[debut])
+        current = taux_reussite(liste_resultats[i])
+        before = taux_reussite(liste_resultats[i - 1])
+        if d is None or current is None or before is None:
+            continue
+        if d >= current and before < current and temp_len >= len_p:
+            debut = fin
+            fin = i
+            len_p = temp_len
+            temp_len = 0
+        else:
+            debut = i
+            if liste_resultats[i][0] != liste_resultats[i - 1][0]:
+                temp_len += 1
+
+    return liste_resultats[debut][0], liste_resultats[fin][0]
 
 
 def est_bien_triee(liste_resultats: list[Resultat]) -> bool:

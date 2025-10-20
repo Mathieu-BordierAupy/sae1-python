@@ -1,3 +1,4 @@
+from random import shuffle
 import explore_dnb as dnb
 
 # -----------------------------------------------------------------------------------------------------
@@ -29,7 +30,11 @@ def test_meilleur():
     assert dnb.meilleur(resultat1, resultat1) is False
 
     # Comparaison avec un resultat impossible
-    assert dnb.meilleur(resultat1, (2022, "MONTAIGNE", 37, 0, 0)) is None
+    assert dnb.meilleur(resultat1, (2022, "MONTAIGNE", 37, 0, 0)) is True
+    assert (
+        dnb.meilleur((2022, "MONTAIGNE", 37, 0, 0), (2022, "MONTAIGNE", 37, 0, 0))
+        is None
+    )
 
 
 def test_meilleur_taux_reussite():
@@ -159,6 +164,9 @@ def test_meilleur_college():
 def test_liste_sessions():
     assert dnb.liste_sessions([]) == []
     assert dnb.liste_sessions(liste2) == [2020, 2021]
+    x = liste2.copy()
+    shuffle(x)
+    assert dnb.liste_sessions(x) == [2020, 2021]
 
 
 def test_plus_longue_periode_amelioration():
@@ -1038,3 +1046,6 @@ liste5: list[dnb.Resultat] = [
     (2021, "SAINT-MARTIN", 45, 41, 38),
     (2021, "SAINTE BERNADETTE", 45, 12, 11),
 ]
+
+if __name__ == "__main__":
+    test_plus_longue_periode_amelioration()
