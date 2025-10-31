@@ -1,0 +1,70 @@
+body {
+    font-family: system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background: #f4f4f4;
+}
+
+.card {
+    border: 1px solid #eee;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.compare {
+    display: flex;
+    gap: 12px;
+}
+
+.col {
+    flex: 1;
+}
+
+.muted {
+    color: #666;
+    font-size: 0.9em
+}
+
+.actions {
+    margin-top: 12px
+}
+
+.btn {
+    background: #0366d6;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none
+}
+
+input,
+select {
+    padding: 6px;
+}

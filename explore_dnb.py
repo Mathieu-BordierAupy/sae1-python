@@ -296,6 +296,10 @@ def moyenne_taux_reussite_college(
             if taux is not None:
                 total_taux += taux
                 nb_taux += 1
+
+    if nb_taux <= 0:
+        return None
+
     return total_taux / nb_taux
 
 
@@ -336,27 +340,26 @@ def meilleur_college(
     return resultats[meilleur_trouve][1], resultats[meilleur_trouve][2]
 
 
-# Tri fusion
-def fusion_liste(liste1: list[int], liste2: list[int]):
-    if liste1 == []:
+def fusion_liste(liste1: list[int], liste2: list[int]) -> list[int]:
+    if not liste1:
         return liste2
-    elif liste2 == []:
+    if not liste2:
         return liste1
+
+    if liste1[0] <= liste2[0]:
+        return [liste1[0]] + fusion_liste(liste1[1:], liste2)
     else:
-        if liste1[0] <= liste2[0]:
-            return [liste1[0]] + fusion_liste(liste1[1::], liste2)
-        else:
-            return [liste2[0]] + fusion_liste(liste1, liste2[1::])
+        return [liste2[0]] + fusion_liste(liste1, liste2[1:])
 
 
-def tri_fusion(liste: list[int]):
+def tri_fusion(liste: list[int]) -> list[int]:
     if len(liste) <= 1:
         return liste
-    else:
-        return fusion_liste(
-            tri_fusion(liste[0 : len(liste) // 2]),
-            tri_fusion(liste[len(liste) // 2 + 1 : len(liste) - 1]),
-        )
+
+    milieu = len(liste) // 2
+    gauche = tri_fusion(liste[:milieu])
+    droite = tri_fusion(liste[milieu:])
+    return fusion_liste(gauche, droite)
 
 
 def liste_sessions(liste_resultats: list[Resultat]) -> list[int]:
@@ -380,7 +383,7 @@ def liste_sessions(liste_resultats: list[Resultat]) -> list[int]:
     return nouvelle_session
 
 
-def plus_longe_periode_amelioration(
+def plus_longue_periode_amelioration(
     liste_resultats: list[Resultat],
 ) -> tuple[int, int] | None:
     """recherche la plus longue periode d'amélioration du taux de réussite global au DNB
@@ -391,28 +394,52 @@ def plus_longe_periode_amelioration(
     Returns:
         tuple: un couple contenant la session (année) de début de la période et la session de fin de la pēriode
     """
-    # Pas de le mood pour cette fonction
-    # debut: int = 0
-    # fin: int = 0
-    # len_p: int = 0
 
-    # temp_len: int = 0
-    # for i in range(1, len(liste_resultats)):
-    #     d = taux_reussite(liste_resultats[debut])
-    #     current = taux_reussite(liste_resultats[i])
-    #     before = taux_reussite(liste_resultats[i - 1])
-    #     if d is None or current is None or before is None:
-    #         continue
-    #     if (d > current and current > before) and temp_len > len_p:
-    #         debut = fin
-    #         len_p = temp_len
-    #         temp_len = 0
-    #     else:
-    #         fin = i
-    #         if liste_resultats[i][0] != liste_resultats[i - 1][0]:
-    #             temp_len += 1
+    if liste_resultats == []:
+        return None
 
-    # return liste_resultats[debut][0], liste_resultats[fin][0]
+    # Fait une liste de toute les années de la liste
+    annees = []
+    for r in liste_resultats:
+        if r[0] not in annees:
+            annees.append(r[0])
+
+    # Calcule les moyennes pour chaque années
+    moyennes = []
+    for annee in annees:
+        sous_liste = filtre_session(liste_resultats, annee)
+        total = total_admis_presents(sous_liste)
+        if total is not None:
+            admis, presents = total
+            if presents > 0:
+                moyennes.append((annee, admis / presents * 100))
+
+    if not moyennes:
+        return None
+
+    meilleur_debut = meilleur_fin = moyennes[0][0]
+    debut = moyennes[0][0]
+    fin = debut
+    plus_grand_temps = 1
+    temps_actuelle = 1
+
+    # Cherche la plus longue periode d'amélioration permis les moyennes calculé
+    for i in range(1, len(moyennes)):
+        if moyennes[i][1] > moyennes[i - 1][1]:
+            fin = moyennes[i][0]
+            temps_actuelle += 1
+        else:
+            if temps_actuelle > plus_grand_temps:
+                plus_grand_temps = temps_actuelle
+                meilleur_debut, meilleur_fin = debut, fin
+            debut = moyennes[i][0]
+            fin = debut
+            temps_actuelle = 1
+
+    if temps_actuelle > plus_grand_temps:
+        meilleur_debut, meilleur_fin = debut, fin
+
+    return (meilleur_debut, meilleur_fin)
 
 
 def est_bien_triee(liste_resultats: list[Resultat]) -> bool:
@@ -424,7 +451,31 @@ def est_bien_triee(liste_resultats: list[Resultat]) -> bool:
     Returns:
         bool: True si la liste est bien triēe et False sinon
     """
-    pass
+
+    if not liste_resultats:
+        return True
+
+    for i in range(1, len(liste_resultats)):
+        prev = liste_resultats[i - 1]
+        cur = liste_resultats[i]
+
+        # Comparer par année d'abord
+        if prev[0] > cur[0]:
+            return False
+
+        # Si même année, comparer par département
+        if prev[0] == cur[0]:
+            if prev[2] > cur[2]:
+                return False
+
+            # Si même année ET même département, comparer par nom (alphabétique)
+            if prev[2] == cur[2]:
+                # On compare les noms tels quels ; tests utilisent des majuscules,
+                # donc l'ordre lexicographique standard est OK.
+                if prev[1] > cur[1]:
+                    return False
+
+    return True
 
 
 def fusionner_resultats(
@@ -440,10 +491,54 @@ def fusionner_resultats(
     Returns:
         list: la liste triée sans doublon comportant tous les rēsultats de liste_resultats1 et liste_resultats2
     """
-    pass
+    # Indice pour la parcours asyncrone des deux liste
+    i, j = 0, 0
+    resultat = []
+
+    while i < len(liste_resultats1) and j < len(liste_resultats2):
+        resultat1, resultat2 = liste_resultats1[i], liste_resultats2[j]
+
+        # Comparaison hiérarchique : année, département, nom
+        if resultat1[0] < resultat2[0] or (
+            resultat1[0] == resultat2[0]
+            and (
+                resultat1[2] < resultat2[2]
+                or (resultat1[2] == resultat2[2] and resultat1[1] < resultat2[1])
+            )
+        ):
+            if not resultat or resultat[-1] != resultat1:
+                resultat.append(resultat1)
+            i += 1
+        elif (
+            resultat1[0] == resultat2[0]
+            and resultat1[1] == resultat2[1]
+            and resultat1[2] == resultat2[2]
+        ):
+            # Les deux résultats sont identiques (même année, nom, département)
+            if not resultat or resultat[-1] != resultat1:
+                resultat.append(resultat1)
+            i += 1
+            j += 1
+        else:
+            if not resultat or resultat[-1] != resultat2:
+                resultat.append(resultat2)
+            j += 1
+
+    # Ajouter les restes (s’ils ne sont pas déjà présents)
+    while i < len(liste_resultats1):
+        if not resultat or resultat[-1] != liste_resultats1[i]:
+            resultat.append(liste_resultats1[i])
+        i += 1
+
+    while j < len(liste_resultats2):
+        if not resultat or resultat[-1] != liste_resultats2[j]:
+            resultat.append(liste_resultats2[j])
+        j += 1
+
+    return resultat
 
 
-def charger_resultats(nom_fichier: str) -> list[Resultat]:
+def charger_resultats(nom_fichier: str) -> list[Resultat] | None:
     """charge un fichier de résultats au DNB donné au format CSV en une liste de résultats
 
     Args:
@@ -452,4 +547,25 @@ def charger_resultats(nom_fichier: str) -> list[Resultat]:
     Returns:
         list: la liste des rēsultats contenus dans le fichier
     """
-    pass
+    try:
+        with open(nom_fichier, "r", errors="replace") as file:
+            line = file.readline()  # Skip la 1er ligne
+            liste_resultats: list[Resultat] = []
+            line_compte = 1
+
+            while line != "":
+                try:
+                    line = file.readline()
+                    line_compte += 1
+                    raw = line.split(",")  # Decoupe la ligne
+                    #       annee       nom     departement     presents    admis
+                    data = int(raw[0]), raw[1], int(raw[2]), int(raw[3]), int(raw[4])
+                    liste_resultats.append(data)
+                except (IndexError, ValueError, UnicodeDecodeError) as err:
+                    # Gestion des erreurs
+                    print(f"Line invalide '{err}' ({line_compte}:{file.tell()})")
+            return liste_resultats
+    except OSError as err:
+        # Gestion des erreurs d'ouverture et d'accès au fichier
+        print(f"Impossible de lire '{nom_fichier}'! {err.strerror}")
+        return None

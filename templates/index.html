@@ -1,0 +1,76 @@
+{% extends 'base.html' %} {% block content %}
+<div class="card">
+  <h2>Information général</h2>
+  <p>
+    <strong>Meilleur période d'amélioration: </strong>{{
+    information.get('periode_amelioration', ['N/A'])[0] }} - {{
+    information.get('periode_amelioration', ['', 'N/A'])[1] }}
+  </p>
+  <p>
+    <strong>Total d'admis / Total Presents: </strong>{{
+    information.get('total_admis_presents', ['N/A'])[0] }} / {{
+    information.get('total_admis_presents', ['', 'N/A'])[1] }}
+  </p>
+  <p>
+    <strong>Meilleur taux de réussite: </strong>{{
+    information.get('meilleur_taux_reussite', 'N/A') }}%
+  </p>
+  <p>
+    <strong>Pire taux de réussite: </strong>{{
+    information.get('pire_taux_reussite', 'N/A') }}%
+  </p>
+</div>
+
+<h2>Recherche</h2>
+<div class="card">
+  <form method="post" action="{{ url_for('index') }}">
+    <label>Nom (fragment) : </label>
+    <input type="text" name="nom" value="{{ request.form.get('nom','') }}" />
+    <label> Département : </label>
+    <input
+      type="number"
+      name="departement"
+      value="{{ request.form.get('departement','') }}"
+      style="width: 80px"
+    />
+    <button class="btn" type="submit">Rechercher</button>
+  </form>
+</div>
+
+{% if results is not none %}
+<h3>Résultats ({{ results|length }})</h3>
+{% if results %}
+<table>
+  <thead>
+    <tr>
+      <th>Année</th>
+      <th>Nom</th>
+      <th>Dépt</th>
+      <th>Présents</th>
+      <th>Admis</th>
+      <th>Taux</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in results %}
+    <tr>
+      <td>{{ r[0] }}</td>
+      <td>{{ r[1] }}</td>
+      <td>{{ r[2] }}</td>
+      <td>{{ r[3] }}</td>
+      <td>{{ r[4] }}</td>
+      <td>
+        {% if r[3] > 0 %}{{ ('%.2f' % ((r[4]/r[3])*100)) }} %{% else %}N/A{%
+        endif %}
+      </td>
+      <td>
+        <a href="{{ url_for('college', nom=r[1], departement=r[2]) }}">Voir</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">Aucun résultat.</p>
+{% endif %} {% endif %} {% endblock %}

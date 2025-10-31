@@ -36,6 +36,22 @@ def test_meilleur():
         is None
     )
 
+    # Cas de taux égaux
+    r1 = (2022, "A", 28, 100, 90)
+    r2 = (2022, "B", 28, 200, 180)  # même taux = 90%
+    assert dnb.meilleur(r1, r2) is False
+    assert dnb.meilleur(r2, r1) is False
+
+    # Cas avec un taux non calculable
+    r3 = (2022, "C", 28, 0, 0)
+    assert dnb.meilleur(r1, r3) is True
+    assert dnb.meilleur(r3, r1) is False
+
+    # Cas avec un taux nul (0 % de réussite)
+    r4 = (2022, "D", 28, 100, 0)
+    assert dnb.meilleur(r4, r1) is False
+    assert dnb.meilleur(r1, r4) is True
+
 
 def test_meilleur_taux_reussite():
     assert dnb.meilleur_taux_reussite(liste2) == 27 / 28 * 100
@@ -153,12 +169,64 @@ def test_moyenne_taux_reussite_college():
     # La liste est vide
     assert dnb.moyenne_taux_reussite_college([], "Abc", 78) is None
 
+    # Cas avec un seul résultat valide
+    liste_unique = [(2023, "JEANNE D'ARC", 45, 71, 67)]
+    assert (
+        dnb.moyenne_taux_reussite_college(liste_unique, "JEANNE D'ARC", 45)
+        == 67 / 71 * 100
+    )
+
+    # Cas avec plusieurs résultats dont un non calculable (présents = 0)
+    liste_mixte = [
+        (2022, "MONTAIGNE", 37, 0, 0),  # Non calculable
+        (2023, "MONTAIGNE", 37, 100, 90),  # 90 %
+    ]
+    assert dnb.moyenne_taux_reussite_college(liste_mixte, "MONTAIGNE", 37) == 90.0
+
+    # Cas où le collège n’existe pas dans la liste
+    liste = [(2020, "ALBERT SIDOISNE", 28, 134, 118)]
+    assert dnb.moyenne_taux_reussite_college(liste, "INCONNU", 28) is None
+
+    # Cas où le département ne correspond pas
+    assert dnb.moyenne_taux_reussite_college(liste, "ALBERT SIDOISNE", 45) is None
+
+    # Cas où aucun taux n’est calculable (présents = 0)
+    liste_zero = [
+        (2020, "ZERO", 28, 0, 0),
+        (2021, "ZERO", 28, 0, 0),
+    ]
+    assert dnb.moyenne_taux_reussite_college(liste_zero, "ZERO", 28) is None
+
 
 def test_meilleur_college():
     assert dnb.meilleur_college(liste1, 2018) is None
     assert dnb.meilleur_college(liste2, 2021) == ("JEAN MONNET", 28)
+
     # La liste est vide
     assert dnb.meilleur_college([], 78) is None
+
+    # Cas de plusieurs collèges avec taux identiques
+    liste = [
+        (2022, "COLLEGE A", 28, 100, 90),
+        (2022, "COLLEGE B", 28, 200, 180),  # même taux = 90%
+        (2022, "COLLEGE C", 28, 50, 40),  # taux plus bas
+    ]
+    res = dnb.meilleur_college(liste, 2022)
+    assert res in [("COLLEGE A", 28), ("COLLEGE B", 28)]
+
+    # Cas avec une session inexistante
+    assert dnb.meilleur_college(liste, 2019) is None
+
+    # Cas avec un seul collège valide
+    liste_unique = [(2023, "MONTAIGNE", 37, 150, 120)]
+    assert dnb.meilleur_college(liste_unique, 2023) == ("MONTAIGNE", 37)
+
+    # Cas où tous les résultats ont 0 présents
+    liste_invalide = [
+        (2024, "ZERO 1", 28, 0, 0),
+        (2024, "ZERO 2", 28, 0, 0),
+    ]
+    assert dnb.meilleur_college(liste_invalide, 2024) is None
 
 
 def test_liste_sessions():
@@ -170,13 +238,62 @@ def test_liste_sessions():
 
 
 def test_plus_longue_periode_amelioration():
-    assert dnb.plus_longe_periode_amelioration(liste5) == (2013, 2017)
-    assert dnb.plus_longe_periode_amelioration(liste1) == (2020, 2020)
+    assert dnb.plus_longue_periode_amelioration(liste5) == (2013, 2017)
+    assert dnb.plus_longue_periode_amelioration(liste1) == (2020, 2020)
+    # Cas liste vide -> doit renvoyer None
+    assert dnb.plus_longue_periode_amelioration([]) is None
+
+    # Cas où toutes les années ont le même taux -> une seule année
+    liste_constante = [
+        (2020, "COLLEGE A", 28, 100, 80),
+        (2021, "COLLEGE B", 28, 200, 160),
+        (2022, "COLLEGE C", 28, 50, 40),
+    ]  # taux global = 80% tout le temps
+    assert dnb.plus_longue_periode_amelioration(liste_constante) == (2020, 2020)
+
+    # Cas où le taux baisse à chaque fois -> seule première année
+    liste_decroissante = [
+        (2020, "A", 28, 100, 90),
+        (2021, "B", 28, 100, 80),
+        (2022, "C", 28, 100, 70),
+    ]
+    assert dnb.plus_longue_periode_amelioration(liste_decroissante) == (2020, 2020)
 
 
 def test_est_bien_triee():
     assert dnb.est_bien_triee(liste1) is True
     assert dnb.est_bien_triee([]) is True
+
+    # Cas triée correctement : années -> départements -> noms
+    liste_triee = [
+        (2020, "A", 28, 100, 80),
+        (2020, "B", 28, 120, 90),
+        (2021, "A", 27, 90, 60),
+        (2021, "A", 28, 100, 70),
+        (2021, "B", 28, 110, 80),
+    ]
+    assert dnb.est_bien_triee(liste_triee) is True
+
+    # Cas non trié par année
+    liste_mauvais_annee = [
+        (2021, "A", 28, 100, 90),
+        (2020, "B", 28, 120, 80),
+    ]
+    assert dnb.est_bien_triee(liste_mauvais_annee) is False
+
+    # Cas non trié par département (à années égales)
+    liste_mauvais_dept = [
+        (2020, "A", 37, 100, 80),
+        (2020, "B", 28, 120, 90),
+    ]
+    assert dnb.est_bien_triee(liste_mauvais_dept) is False
+
+    # Cas non trié par nom (même année, même département)
+    liste_mauvais_nom = [
+        (2020, "ZOLA", 28, 100, 90),
+        (2020, "ANATOLE", 28, 120, 110),
+    ]
+    assert dnb.est_bien_triee(liste_mauvais_nom) is False
 
 
 def test_fusionner_resultats():

@@ -1,0 +1,63 @@
+{% extends 'base.html' %} {% block content %}
+<h2>Recherche par session</h2>
+<div class="card">
+  <form method="post" action="{{ url_for('sessions') }}">
+    <label> Session : </label>
+    <input
+      type="number"
+      name="session"
+      value="{{ request.form.get('session','') }}"
+      style="width: 80px"
+    />
+    <button class="btn" type="submit">Rechercher</button>
+  </form>
+  <p class="muted">
+    <strong>Sessions disponibles: </strong>{{ sessions_list|join(", ") }}
+  </p>
+</div>
+
+{% if info is not none %}
+<div class="card">
+  <p>
+    <strong>Taux de réussite global: </strong>{{
+    info.get('taux_reussite_global', "N/A") }}
+  </p>
+  <p>
+    <strong>Meilleur collège: </strong>{{ info.get('meilleur_college', "N/A")|join(', ') }}
+  </p>
+</div>
+{% endif %} {% if results is not none %}
+<h3>Résultats ({{ results|length }})</h3>
+{% if results %}
+<table>
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Dépt</th>
+      <th>Présents</th>
+      <th>Admis</th>
+      <th>Taux</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in results %}
+    <tr>
+      <td>{{ r[1] }}</td>
+      <td>{{ r[2] }}</td>
+      <td>{{ r[3] }}</td>
+      <td>{{ r[4] }}</td>
+      <td>
+        {% if r[3] > 0 %}{{ ('%.2f' % ((r[4]/r[3])*100)) }} %{% else %}N/A{%
+        endif %}
+      </td>
+      <td>
+        <a href="{{ url_for('college', nom=r[1], departement=r[2]) }}">Voir</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">Aucun résultat.</p>
+{% endif %} {% endif %} {% endblock %}

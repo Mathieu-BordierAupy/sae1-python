@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Comparer deux collèges</h2>
+  <form method="get" action="{{ url_for('compare') }}">
+    <label>Nom 1: <input name="nom1" value="{{ request.args.get('nom1','') }}"></label>
+    <label>Dépt 1: <input name="dep1" value="{{ request.args.get('dep1','') }}" style="width:80px"></label>
+    <br>
+    <label>Nom 2: <input name="nom2" value="{{ request.args.get('nom2','') }}"></label>
+    <label>Dépt 2: <input name="dep2" value="{{ request.args.get('dep2','') }}" style="width:80px"></label>
+    <div class="actions"><button class="btn" type="submit">Comparer</button></div>
+  </form>
+
+  {% if left or right %}
+    <div class="compare">
+      <div class="col card">
+        <h3>{{ left_name or 'Aucun' }}</h3>
+        {% if left %}
+          <p><strong>Moyenne:</strong> {{ '%.2f' % left.moyenne }} %</p>
+          <p><strong>Totals:</strong> {{ left.totals[0] }} / {{ left.totals[1] }}</p>
+          <p><strong>Années:</strong> {{ left.annees|join(', ') }}</p>
+        {% else %}
+          <p class="muted">Aucun collège trouvé</p>
+        {% endif %}
+      </div>
+
+      <div class="col card">
+        <h3>{{ right_name or 'Aucun' }}</h3>
+        {% if right %}
+          <p><strong>Moyenne:</strong> {{ '%.2f' % right.moyenne }} %</p>
+          <p><strong>Totals:</strong> {{ right.totals[0] }} / {{ right.totals[1] }}</p>
+          <p><strong>Années:</strong> {{ right.annees|join(', ') }}</p>
+        {% else %}
+          <p class="muted">Aucun collège trouvé</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

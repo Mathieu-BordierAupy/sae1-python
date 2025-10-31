@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DNB Explorer</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>DNB</h1>
+        <p>Fichier ouvert: {{ session["csv_name"] }}</p>
+        <nav>
+          <a href="{{ url_for('index') }}">Recherche</a> |
+          <a href="{{ url_for('compare') }}">Comparer</a> |
+          <a href="{{ url_for('sessions') }}">Sessions</a> |
+          <a href="/">Nouveau</a>
+        </nav>
+      </header>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
