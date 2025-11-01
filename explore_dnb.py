@@ -4,9 +4,12 @@
 
 
 # Type custom pour les tuple de resultat
+import functools
+
+
 Resultat = tuple[int, str, int, int, int]
 
-
+@functools.lru_cache
 def taux_reussite(resultat: Resultat) -> float | None:
     """calcule le pourcentage de réussite correspondant au résultat
 
@@ -238,6 +241,31 @@ def filtre_college(
         if (
             resultat[2] == departement and nom.lower() in resultat[1].lower()
         ):  # string_contient(resultat[1], nom):
+            liste_resultats_triee.append(resultat)
+
+    return liste_resultats_triee
+
+
+def filtre_college_non_dep(liste_resultats: list[Resultat], nom: str) -> list[Resultat]:
+    """génère la sous-liste de liste_resultats, restreinte aux résultats du département donné et dont le nom du collège contient le nom passé en paramètre (en minuscule ou majuscule)
+
+    Args:
+        liste_resultats (list): une liste de résultats
+        nom (str): un nom de collège (éventuellement incomplet)
+        departement (int) : un numéro de département
+
+    Returns:
+        list: la sous-liste de liste_resultats, restreinte aux résultats du collège et du département recherchēs
+    """
+    liste_resultats_triee: list[Resultat] = []
+
+    # Pour chaque tour de boucle
+    #   resultats est le tuple resultat suivant de liste_resultats
+    #   resultats[1] est le nom du college du resulat actuel
+    #   liste_resultats_triee contient tout les resultats qui sont du bon departement et commencant par le nom déjà trouvé
+    for resultat in liste_resultats:
+        # TODO: Maybe I can't use __contains__
+        if nom.lower() in resultat[1].lower():  # string_contient(resultat[1], nom):
             liste_resultats_triee.append(resultat)
 
     return liste_resultats_triee

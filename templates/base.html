@@ -13,6 +13,7 @@
     <div class="container">
       <header>
         <h1>DNB</h1>
+        {% if session["csv_name"] is not none %}
         <p>Fichier ouvert: {{ session["csv_name"] }}</p>
         <nav>
           <a href="{{ url_for('index') }}">Recherche</a> |
@@ -20,6 +21,7 @@
           <a href="{{ url_for('sessions') }}">Sessions</a> |
           <a href="/">Nouveau</a>
         </nav>
+        {% endif %}
       </header>
       {% block content %}{% endblock %}
     </div>

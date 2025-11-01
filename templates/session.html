@@ -20,10 +20,15 @@
 <div class="card">
   <p>
     <strong>Taux de réussite global: </strong>{{
-    info.get('taux_reussite_global', "N/A") }}
+    info.get('taux_reussite_global', "N/A") }}%
   </p>
   <p>
-    <strong>Meilleur collège: </strong>{{ info.get('meilleur_college', "N/A")|join(', ') }}
+    <strong>Meilleur collège: </strong>{{ info.get('meilleur_college',
+    ["N/A"])|join(', ') }}
+  </p>
+  <p>
+    <strong>Total d'admis / présent: </strong>{{ info.get('total',
+    ["N/A"])|join('/') }}
   </p>
 </div>
 {% endif %} {% if results is not none %}
