@@ -4,32 +4,36 @@
 
 ## Comment utiliser le projet ?
 
+### Initialisation
+
 Il vous faudra tout d'abord créer un environnement virtuel :
 
 ```bash
 python3 -m venv .venv
 ```
 
-et l'activer:
+et l'activer :
 
 ```bash
 source .venv/bin/activate  # Linux
 .\.venv\Scripts\activate.ps1  # Windows
 ```
 
-Pour installer les paquets nécessaires au fonctionnement de l'application, utiliser la commande suivante:
+Pour installer les paquets nécessaires au fonctionnement de l'application, utiliser la commande suivante :
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Enfin pour lancer l'application vous pouvez utiliser:
+### Utilisation
+
+Enfin pour utiliser l'application vous devez faire la commande suivante :
 
 ```bash
 python3 consultation_dnb.py
 ```
 
-Il vous suffira d'aller dans un navigateur et  à `http://127.0.0.1:5000` pour utiliser l'application.
+Puis il vous suffira d'aller dans un navigateur et à l'address `http://127.0.0.1:5000` pour utiliser l'application.
 
 ## Task
 
