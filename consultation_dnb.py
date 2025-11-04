@@ -45,6 +45,7 @@ def info_college(nom: str, departement: int):
 @app.route("/")
 def home():
     session["csv_name"] = None
+    session["csv_path"] = os.path.join(UPLOAD_FOLDER, "table.csv")
     if os.path.exists(session["csv_path"]):
         os.remove(session["csv_path"])
     if not os.path.exists(app.config["UPLOAD_FOLDER"]):
@@ -127,6 +128,7 @@ def success(file: str):
 @app.route("/open", methods=["POST", "GET"])
 def open_file():
     global table
+    table = []
     if request.method == "POST":
         # check if the post request has the file part
         if "file" not in request.files:
